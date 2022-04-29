@@ -1,4 +1,5 @@
 import { app } from './app';
+import { mysqlWrapper } from './mysql-wrapper';
 
 const PORT = process.env.PORT || 3000;
 
@@ -8,7 +9,7 @@ const start = async () => {
   }
 
   try {
-    // await mongoose.connect(process.env.MONGO_URL);
+    await mysqlWrapper.connect(process.env.MYSQL_URL);
   } catch (error) {
     console.error(error);
   }

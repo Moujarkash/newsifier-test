@@ -3,18 +3,35 @@ kind: Deployment
 metadata:
   name: user-mysql-depl
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: user-mysql
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: user-mysql
     spec:
       containers:
-        - name: user-mysql
-          image: mysql
+      - image: mysql:oracle
+        name: user-mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: user-mysql-secret
+              key: password
+        ports:
+        - containerPort: 3306
+          name: user-mysql
+        volumeMounts:
+        - name: user-mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: user-mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: user-mysql-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -24,7 +41,7 @@ spec:
   selector:
     app: user-mysql
   ports:
-    - name: db
-      protocol: TCP
-      port: 27017
-      targetPort: 27017
+  - name: user-mysql
+    protocol: TCP
+    port: 3306
+    targetPort: 3306    

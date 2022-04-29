@@ -15,7 +15,14 @@ spec:
       containers:
       - name: user
         image: mod488/newsifier-user
-        imagePullPolicy: "Always"
+        env:
+          - name: MYSQL_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: user-mysql-secret
+                key: password   
+          - name: MYSQL_URL
+            value: 'mysql://root:$(MYSQL_USER_PASSWORD)@user-mysql-srv:3306/' 
 ---
 apiVersion: v1
 kind: Service
