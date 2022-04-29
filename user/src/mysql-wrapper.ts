@@ -1,18 +1,31 @@
-import mysql, { Connection } from 'mysql2/promise';
+import { Sequelize } from 'sequelize';
+import mysql from 'mysql2/promise';
+import { initUser } from './models/user';
+import { initImage } from './models/image';
 
 class MysqlWrapper {
-    private _connection?: Connection;
+  private _client?: Sequelize;
 
-  get connection() {
-    if (!this._connection) {
+  get client() {
+    if (!this._client) {
       throw new Error('Cannot access MYSQL before connecting');
     }
 
-    return this._connection;
+    return this._client;
   }
 
   async connect(url: string) {
-    this._connection = await mysql.createConnection(url);
+    const connection = await mysql.createConnection(url);
+    const dbName = 'NEWSIFIER_USERS';
+    await connection.query(`CREATE DATABASE IF NOT EXISTS ${dbName};`);
+
+    this._client = new Sequelize(`${url}${dbName}`);
+    await this._client.authenticate();
+
+    initImage(this._client);
+    initUser(this._client);
+
+    await this._client.sync();
   }
 }
 
