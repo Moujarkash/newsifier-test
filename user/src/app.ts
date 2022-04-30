@@ -3,13 +3,13 @@ import 'express-async-errors';
 import { json } from 'body-parser';
 import { NotFoundError } from './errors/not-found-error';
 import { errorHandler } from './middlewares/error-handler';
-import { userRouter } from './routes/user';
+import router from './routes';
 
 const app = express();
 
 app.use(json());
 
-app.use('/api/v1/user', userRouter);
+app.use('/api/v1', router);
 
 app.all('*', () => {
   throw new NotFoundError();
