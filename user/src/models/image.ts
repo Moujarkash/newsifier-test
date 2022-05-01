@@ -30,12 +30,12 @@ Image.init(
   },
   {
     sequelize: sequelize,
-    modelName: 'Image',
+    timestamps: false,
     tableName: 'images',
     underscored: true,
   }
 );
 
-Image.hasOne(User);
+// Image.hasOne(User, {foreignKey: 'image_id'});
 
 export default Image;

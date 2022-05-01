@@ -1,4 +1,4 @@
-import { Dialect, Model, Sequelize } from 'sequelize';
+import { Dialect, Sequelize } from 'sequelize';
 
 const isTest = process.env.NODE_ENV === 'test';
 

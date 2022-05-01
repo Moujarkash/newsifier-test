@@ -2,12 +2,10 @@ import {
   CreationOptional,
   DataTypes,
   ForeignKey,
-  HasOneCreateAssociationMixin,
-  HasOneGetAssociationMixin,
-  HasOneSetAssociationMixin,
   InferAttributes,
   InferCreationAttributes,
   Model,
+  NonAttribute,
 } from 'sequelize';
 import sequelize from '../db/config';
 import Image from './image';
@@ -18,12 +16,10 @@ export class User extends Model<
 > {
   declare id: CreationOptional<number>;
   declare username: string;
-  declare karmaScore: CreationOptional<number>;
-  declare imageId: ForeignKey<Image['id']>;
-
-  declare getImage: HasOneGetAssociationMixin<Image>;
-  declare createImage: HasOneCreateAssociationMixin<Image>;
-  declare setImage: HasOneSetAssociationMixin<Image, number>;
+  declare karma_score: CreationOptional<number>;
+  declare image_id: ForeignKey<Image['id']>;
+  declare image?: NonAttribute<Image>;
+  declare position?: NonAttribute<number>;
 }
 
 User.init(
@@ -38,17 +34,19 @@ User.init(
       allowNull: false,
       unique: true,
     },
-    karmaScore: {
-      type: DataTypes.INTEGER.ZEROFILL,
+    karma_score: {
+      type: DataTypes.INTEGER,
       defaultValue: 0,
-    }
+    },
   },
   {
     sequelize: sequelize,
-    modelName: 'User',
+    timestamps: false,
     tableName: 'users',
     underscored: true,
   }
 );
+
+User.belongsTo(Image, { foreignKey: 'image_id', as: 'image' });
 
 export default User;
